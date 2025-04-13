@@ -1,4 +1,4 @@
-import { IsEmail, IsNotEmpty, Length } from 'class-validator';
+import { IsEmail, IsEnum, IsNotEmpty, Length } from 'class-validator';
 import { IsCPF } from 'class-validator-cpf';
 import { TypeUserPermissionEnum } from 'src/shared/enum/type.user.permission.enum';
 

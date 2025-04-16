@@ -18,13 +18,13 @@ export class CreateUserDto {
   @IsNotEmpty({ message: 'O password é obrigatório.' })
   password: string;
 
-  @IsNotEmpty({ message: 'O tipo do é obrigatório.' })
+  @IsNotEmpty({ message: 'O tipo do usuário é obrigatório.' })
   @IsEnum(TypeUserPermissionEnum, {
     message: 'O tipo de usuário informado não é válido.',
   })
   typeUser: TypeUserPermissionEnum;
 
-  @IsNotEmpty({ message: 'O cpf é obrigatório.' })
+  @IsNotEmpty({ message: 'O CPF é obrigatório.' })
   @IsCPF({ message: 'O CPF informado não é válido.' })
   cpf: string;
 }

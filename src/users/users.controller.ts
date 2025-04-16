@@ -6,13 +6,13 @@ import {
 } from 'src/shared/interfaces/users.service.interface';
 import { USER_SERVICE_INTERFACE } from 'src/shared/interfaces/injection.types';
 
-@Controller('users/')
+@Controller('users')
 export class UsersController {
   @Inject(USER_SERVICE_INTERFACE)
   private readonly userService: IUserService;
 
-  @Post('create')
-  create(@Body dto: CreateUserDto): IReturnMethodCreate {
+  @Post('/create')
+  create(@Body() dto: CreateUserDto): IReturnMethodCreate {
     return this.userService.create(dto);
   }
 }

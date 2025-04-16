@@ -8,6 +8,7 @@ import { cpf as libCpf } from 'cpf-cnpj-validator';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from 'src/entities/user.entity';
 import { Repository } from 'typeorm';
+import { hashSync } from 'bcrypt';
 
 @Injectable()
 export class UsersService implements IUserService {
@@ -24,13 +25,37 @@ export class UsersService implements IUserService {
       throw new BadRequestException('O CPF informado é inválido.');
     }
 
+    const userExists: boolean =
+      (
+        await this.userRepository.find({
+          where: { email },
+        })
+      ).length > 0;
+
+    if (userExists) {
+      throw new BadRequestException('O email informado já está cadastrado.');
+    }
+
+    const cpfExists: boolean =
+      (
+        await this.userRepository.find({
+          where: { cpf },
+        })
+      ).length > 0;
+
+    if (cpfExists) {
+      throw new BadRequestException('O cpf informado já está cadastrado');
+    }
+
+    const encriptedPassword: string = hashSync(password, 10);
+
     const user: UserEntity = await this.userRepository.create({
       name,
       surname,
       email,
-      password,
+      password: encriptedPassword,
       typeUser,
-      cpf: formattedCpf,
+      cpf,
     });
 
     await this.userRepository.save(user);

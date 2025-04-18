@@ -12,7 +12,7 @@ export class UsersController {
   private readonly userService: IUserService;
 
   @Post('/create')
-  create(@Body() dto: CreateUserDto): IReturnMethodCreate {
+  create(@Body() dto: CreateUserDto): Promise<IReturnMethodCreate> {
     return this.userService.create(dto);
   }
 }

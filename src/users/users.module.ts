@@ -9,18 +9,15 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from 'src/entities/user.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtAuthService } from 'src/security/jwt.auth.service';
+import { JwtAuthModule } from 'src/security/jwt.auth.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([UserEntity])],
+  imports: [TypeOrmModule.forFeature([UserEntity]), JwtAuthModule],
   controllers: [UsersController],
   providers: [
     {
       provide: USER_SERVICE_INTERFACE,
       useClass: UsersService,
-    },
-    {
-      provide: JWT_AUTH_SERVICE_INTERFACE,
-      useClass: JwtAuthService,
     },
   ],
   exports: [],

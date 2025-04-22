@@ -1,0 +1,1 @@
+export const CREATE_USER_QUEUE = 'CREATE_USER_QUEUE';

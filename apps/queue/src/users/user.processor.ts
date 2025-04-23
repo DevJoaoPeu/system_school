@@ -8,11 +8,17 @@ import {
 import { CREATE_USER_QUEUE } from 'libs/shared/constants/queues';
 import { Job, Queue, Worker } from 'bullmq';
 import { CreateUserDto } from 'libs/shared/src/dto/create.user.dto';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserEntity } from '../entities/user.entity';
+import { Repository } from 'typeorm';
 
 @Injectable()
 export class UserProcessor implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(UserProcessor.name);
   private worker: Worker;
+
+  @InjectRepository(UserEntity)
+  private readonly userRepository: Repository<UserEntity>;
 
   constructor(
     @InjectQueue(CREATE_USER_QUEUE) private readonly createUserQueue: Queue,
@@ -33,5 +39,9 @@ export class UserProcessor implements OnModuleInit, OnModuleDestroy {
 
   async onModuleDestroy() {
     await this.worker.close();
+  }
+
+  async createUser(user: CreateUserDto): Promise<void> {
+    await this.userRepository.save(user);
   }
 }

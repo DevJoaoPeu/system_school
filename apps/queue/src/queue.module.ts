@@ -3,9 +3,12 @@ import { UserProcessor } from './users/user.processor';
 import { BullModule } from '@nestjs/bullmq';
 import { SharedModule } from '@app/shared/shared.module';
 import { CREATE_USER_QUEUE } from 'libs/shared/constants/queues';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { UserEntity } from './entities/user.entity';
 
 @Module({
   imports: [
+    TypeOrmModule.forFeature([UserEntity]),
     SharedModule,
     BullModule.registerQueue({ name: CREATE_USER_QUEUE }),
   ],

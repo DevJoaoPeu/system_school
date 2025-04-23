@@ -1,1 +1,1 @@
-export const CREATE_USER_QUEUE = 'CREATE_USER_QUEUE';
+export const CREATE_USER_QUEUE: string = 'CREATE_USER_QUEUE';

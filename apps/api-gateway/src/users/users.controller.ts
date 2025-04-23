@@ -1,6 +1,6 @@
 import { InjectQueue } from '@nestjs/bullmq';
 import { Body, Controller, Post } from '@nestjs/common';
-import { CREATE_USER_QUEUE } from '../../../../libs/shared/constants/queues';
+import { CREATE_USER_QUEUE } from 'libs/shared/constants/queues';
 import { Queue } from 'bullmq';
 import { CreateUserDto } from 'libs/shared/src/dto/create.user.dto';
 

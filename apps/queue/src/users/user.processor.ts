@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { CREATE_USER_QUEUE } from 'libs/shared/constants/queues';
 import { Job, Queue, Worker } from 'bullmq';
-import { CreateUserDto } from 'apps/api-gateway/src/users/dto/create.user.dto';
+import { CreateUserDto } from 'libs/shared/src/dto/create.user.dto';
 
 @Injectable()
 export class UserProcessor implements OnModuleInit, OnModuleDestroy {

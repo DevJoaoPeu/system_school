@@ -30,6 +30,7 @@ export class UserProcessor implements OnModuleInit, OnModuleDestroy {
       async (job: Job<CreateUserDto & { id: number }>) => {
         console.log(job.data);
         this.logger.log(`Receve event: ${job.name}: ${job.data}`);
+        this.createUser(job.data);
       },
       {
         connection: this.createUserQueue.opts.connection,

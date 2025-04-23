@@ -1,6 +1,6 @@
 import { InjectQueue } from '@nestjs/bullmq';
-import { Controller, Post } from '@nestjs/common';
-import { CREATE_USER_QUEUE } from './constants/queues';
+import { Body, Controller, Post } from '@nestjs/common';
+import { CREATE_USER_QUEUE } from '../../../../libs/shared/constants/queues';
 import { Queue } from 'bullmq';
 import { CreateUserDto } from './dto/create.user.dto';
 
@@ -12,7 +12,8 @@ export class UsersController {
   ) {}
 
   @Post('/create')
-  async create(dto: CreateUserDto) {
+  async create(@Body() dto: CreateUserDto) {
+    console.log(dto);
     this.createUserQueue.add(CREATE_USER_QUEUE, dto);
   }
 }

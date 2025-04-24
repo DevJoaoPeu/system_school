@@ -2,7 +2,10 @@ import { Module } from '@nestjs/common';
 import { UserProcessor } from './users/user.processor';
 import { BullModule } from '@nestjs/bullmq';
 import { SharedModule } from '@app/shared/shared.module';
-import { CREATE_USER_QUEUE } from 'libs/shared/constants/queues';
+import {
+  CREATE_USER_QUEUE,
+  LIST_ALL_USERS_QUEUE,
+} from 'libs/shared/constants/queues';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from './entities/user.entity';
 
@@ -10,7 +13,10 @@ import { UserEntity } from './entities/user.entity';
   imports: [
     TypeOrmModule.forFeature([UserEntity]),
     SharedModule,
-    BullModule.registerQueue({ name: CREATE_USER_QUEUE }),
+    BullModule.registerQueue(
+      { name: CREATE_USER_QUEUE },
+      { name: LIST_ALL_USERS_QUEUE },
+    ),
   ],
   providers: [UserProcessor],
 })

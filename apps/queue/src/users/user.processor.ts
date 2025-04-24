@@ -5,7 +5,10 @@ import {
   OnModuleDestroy,
   OnModuleInit,
 } from '@nestjs/common';
-import { CREATE_USER_QUEUE } from 'libs/shared/constants/queues';
+import {
+  CREATE_USER_QUEUE,
+  LIST_ALL_USERS_QUEUE,
+} from 'libs/shared/constants/queues';
 import { Job, Queue, Worker } from 'bullmq';
 import { CreateUserDto } from 'libs/shared/src/dto/create.user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -22,6 +25,8 @@ export class UserProcessor implements OnModuleInit, OnModuleDestroy {
 
   constructor(
     @InjectQueue(CREATE_USER_QUEUE) private readonly createUserQueue: Queue,
+    @InjectQueue(LIST_ALL_USERS_QUEUE)
+    private readonly listAllUsersQueue: Queue,
   ) {}
 
   onModuleInit() {
@@ -34,6 +39,16 @@ export class UserProcessor implements OnModuleInit, OnModuleDestroy {
       },
       {
         connection: this.createUserQueue.opts.connection,
+      },
+    );
+
+    this.worker = new Worker(
+      LIST_ALL_USERS_QUEUE,
+      async (job: Job<{ id: number }>) => {
+        console.log(job.name, 'chegou');
+      },
+      {
+        connection: this.listAllUsersQueue.opts.connection,
       },
     );
   }

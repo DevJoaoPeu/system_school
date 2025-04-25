@@ -18,7 +18,7 @@ import { Repository } from 'typeorm';
 @Injectable()
 export class UserProcessor implements OnModuleInit, OnModuleDestroy {
   private readonly logger = new Logger(UserProcessor.name);
-  private worker: Worker;
+  private workers: Worker[] = [];
 
   @InjectRepository(UserEntity)
   private readonly userRepository: Repository<UserEntity>;
@@ -29,36 +29,51 @@ export class UserProcessor implements OnModuleInit, OnModuleDestroy {
     private readonly listAllUsersQueue: Queue,
   ) {}
 
-  onModuleInit() {
-    this.worker = new Worker(
+  async onModuleInit(): Promise<void> {
+    await this.initializeWorkers();
+  }
+
+  async onModuleDestroy(): Promise<void> {
+    await this.closeWorkers();
+  }
+
+  private async initializeWorkers(): Promise<void> {
+    this.workers = [
+      this.createCreateUserWorker(),
+      this.createListAllUsersWorker(),
+    ];
+  }
+
+  private createCreateUserWorker(): Worker {
+    const worker = new Worker(
       CREATE_USER_QUEUE,
-      async (job: Job<CreateUserDto & { id: number }>) => {
-        console.log(job.data);
-        this.logger.log(`Receve event: ${job.name}: ${job.data}`);
-        this.createUser(job.data);
+      async (job: Job<CreateUserDto>) => {
+        this.userRepository.save(job.data);
       },
       {
         connection: this.createUserQueue.opts.connection,
       },
     );
 
-    this.worker = new Worker(
+    return worker;
+  }
+
+  private createListAllUsersWorker(): Worker {
+    const worker = new Worker(
       LIST_ALL_USERS_QUEUE,
-      async (job: Job<{ id: number }>) => {
-        console.log(job.name, 'chegou');
+      async (job: Job) => {
         return this.userRepository.find();
       },
       {
         connection: this.listAllUsersQueue.opts.connection,
       },
     );
+
+    return worker;
   }
 
-  async onModuleDestroy() {
-    await this.worker.close();
-  }
-
-  async createUser(user: CreateUserDto): Promise<void> {
-    await this.userRepository.save(user);
+  private async closeWorkers(): Promise<void> {
+    await Promise.all(this.workers.map((worker) => worker.close()));
+    this.logger.log('All workers closed successfully');
   }
 }

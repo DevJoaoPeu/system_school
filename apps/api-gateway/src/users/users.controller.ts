@@ -25,20 +25,12 @@ export class UsersController {
 
   @Post('/create')
   async create(@Body() dto: CreateUserDto) {
-    console.log(dto);
     this.createUserQueue.add(CREATE_USER_QUEUE, dto);
   }
 
   @Get('/list/all')
   async listAll() {
-    const job = await this.listAllUsersQueue.add(
-      LIST_ALL_USERS_QUEUE,
-      {},
-      {
-        removeOnComplete: true,
-        removeOnFail: true,
-      },
-    );
+    const job = await this.listAllUsersQueue.add(LIST_ALL_USERS_QUEUE, {});
 
     return await job.waitUntilFinished(this.listAllQueueEvents);
   }

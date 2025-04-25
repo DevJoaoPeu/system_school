@@ -38,13 +38,10 @@ export class UserProcessor implements OnModuleInit, OnModuleDestroy {
   }
 
   private async initializeWorkers(): Promise<void> {
-    this.workers = [
-      this.createCreateUserWorker(),
-      this.createListAllUsersWorker(),
-    ];
+    this.workers = [this.createUserWorker(), this.listAllUsersWorker()];
   }
 
-  private createCreateUserWorker(): Worker {
+  private createUserWorker(): Worker {
     const worker = new Worker(
       CREATE_USER_QUEUE,
       async (job: Job<CreateUserDto>) => {
@@ -58,7 +55,7 @@ export class UserProcessor implements OnModuleInit, OnModuleDestroy {
     return worker;
   }
 
-  private createListAllUsersWorker(): Worker {
+  private listAllUsersWorker(): Worker {
     const worker = new Worker(
       LIST_ALL_USERS_QUEUE,
       async (job: Job) => {

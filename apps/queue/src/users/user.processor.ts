@@ -46,6 +46,7 @@ export class UserProcessor implements OnModuleInit, OnModuleDestroy {
       LIST_ALL_USERS_QUEUE,
       async (job: Job<{ id: number }>) => {
         console.log(job.name, 'chegou');
+        return this.userRepository.find();
       },
       {
         connection: this.listAllUsersQueue.opts.connection,

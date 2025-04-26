@@ -1,27 +1,9 @@
-import { Module } from '@nestjs/common';
-import { UserProcessor } from './users/user.processor';
-import { BullModule } from '@nestjs/bullmq';
 import { SharedModule } from '@app/shared/shared.module';
-import {
-  CREATE_USER_QUEUE,
-  LIST_ALL_USERS_QUEUE,
-  LIST_ONE_USER_QUEUE,
-} from 'libs/shared/constants/queues';
-import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserEntity } from './entities/user.entity';
 import { AuthModule } from './auth/auth.module';
-
+import { UsersModule } from './users/users.module';
+import { Module } from '@nestjs/common';
 @Module({
-  imports: [
-    TypeOrmModule.forFeature([UserEntity]),
-    SharedModule,
-    BullModule.registerQueue(
-      { name: CREATE_USER_QUEUE },
-      { name: LIST_ALL_USERS_QUEUE },
-      { name: LIST_ONE_USER_QUEUE },
-    ),
-    AuthModule,
-  ],
-  providers: [UserProcessor],
+  imports: [AuthModule, UsersModule, SharedModule],
+  providers: [],
 })
 export class QueueModule {}

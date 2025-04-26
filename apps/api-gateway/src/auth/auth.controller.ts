@@ -1,7 +1,13 @@
 import { EventLoginDto } from '@app/shared/dto/auth/event.login.dto';
 import { LoginDto } from '@app/shared/dto/auth/login.dto';
 import { InjectQueue } from '@nestjs/bullmq';
-import { Body, Controller, Post, UnauthorizedException } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Logger,
+  Post,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Queue, QueueEvents } from 'bullmq';
 import { LOGIN_USER_QUEUE } from 'libs/shared/constants/queues';
 
@@ -19,7 +25,7 @@ export class AuthController {
     });
   }
 
-  @Post('login')
+  @Post('/login')
   async login(@Body() dto: LoginDto) {
     const job = await this.loginUserQueue.add(LOGIN_USER_QUEUE, dto);
 
@@ -28,7 +34,7 @@ export class AuthController {
     );
 
     if (event.loginIsValid) {
-      return UnauthorizedException('Login invalid');
+      return new UnauthorizedException('Login invalid');
     }
 
     return { acessToken: event.acessToken };

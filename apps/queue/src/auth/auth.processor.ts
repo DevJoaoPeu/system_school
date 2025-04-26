@@ -24,10 +24,12 @@ export class AuthProcessor implements OnModuleInit, OnModuleDestroy {
     @InjectQueue(LOGIN_USER_QUEUE) private readonly loginUserQueue: Queue,
   ) {}
 
-  onModuleDestroy() {}
-
   onModuleInit() {
     this.initializeWorkers();
+  }
+
+  onModuleDestroy() {
+    this.closeWorkers();
   }
 
   private async initializeWorkers() {
@@ -39,6 +41,11 @@ export class AuthProcessor implements OnModuleInit, OnModuleDestroy {
       LOGIN_USER_QUEUE,
       async (job: Job<LoginDto>) => {
         const { email, password } = job.data;
+
+        return {
+          loginIsValid: false,
+          acessToken: `${email}-${password}`,
+        };
       },
       {
         connection: this.loginUserQueue.opts.connection,
@@ -46,5 +53,10 @@ export class AuthProcessor implements OnModuleInit, OnModuleDestroy {
     );
 
     return worker;
+  }
+
+  private async closeWorkers(): Promise<void> {
+    await Promise.all(this.workers.map((worker) => worker.close()));
+    this.logger.log('All workers closed successfully');
   }
 }

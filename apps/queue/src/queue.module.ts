@@ -9,6 +9,7 @@ import {
 } from 'libs/shared/constants/queues';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from './entities/user.entity';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { UserEntity } from './entities/user.entity';
       { name: LIST_ALL_USERS_QUEUE },
       { name: LIST_ONE_USER_QUEUE },
     ),
+    AuthModule,
   ],
   providers: [UserProcessor],
 })

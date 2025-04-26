@@ -6,8 +6,8 @@ import {
   LIST_ONE_USER_QUEUE,
 } from 'libs/shared/constants/queues';
 import { Queue, QueueEvents } from 'bullmq';
-import { CreateUserDto } from 'libs/shared/src/dto/create.user.dto';
-import { UserDto } from '@app/shared/dto/user.dto';
+import { CreateUserDto } from '@app/shared/dto/user/create.user.dto';
+import { UserDto } from '@app/shared/dto/user/user.dto';
 
 @Controller('users')
 export class UsersController {

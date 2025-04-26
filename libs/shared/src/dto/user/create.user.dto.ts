@@ -1,6 +1,6 @@
 import { IsEmail, IsEnum, IsNotEmpty, Length } from 'class-validator';
 import { IsCPF } from 'class-validator-cpf';
-import { TypeUserPermissionEnum } from '../../enums/type.user.permission';
+import { TypeUserPermissionEnum } from '../../../enums/type.user.permission';
 
 export class CreateUserDto {
   @IsNotEmpty({ message: 'O nome é obrigatório.' })

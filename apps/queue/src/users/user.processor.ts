@@ -11,7 +11,7 @@ import {
   LIST_ONE_USER_QUEUE,
 } from 'libs/shared/constants/queues';
 import { Job, Queue, Worker } from 'bullmq';
-import { CreateUserDto } from 'libs/shared/src/dto/create.user.dto';
+import { CreateUserDto } from '@app/shared/dto/user/create.user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from '../entities/user.entity';
 import { Repository } from 'typeorm';

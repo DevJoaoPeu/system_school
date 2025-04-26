@@ -8,6 +8,7 @@ import {
 import {
   CREATE_USER_QUEUE,
   LIST_ALL_USERS_QUEUE,
+  LIST_ONE_USER_QUEUE,
 } from 'libs/shared/constants/queues';
 import { Job, Queue, Worker } from 'bullmq';
 import { CreateUserDto } from 'libs/shared/src/dto/create.user.dto';
@@ -27,6 +28,8 @@ export class UserProcessor implements OnModuleInit, OnModuleDestroy {
     @InjectQueue(CREATE_USER_QUEUE) private readonly createUserQueue: Queue,
     @InjectQueue(LIST_ALL_USERS_QUEUE)
     private readonly listAllUsersQueue: Queue,
+    @InjectQueue(LIST_ONE_USER_QUEUE)
+    private readonly listOneUserQueue: Queue,
   ) {}
 
   async onModuleInit(): Promise<void> {
@@ -38,7 +41,27 @@ export class UserProcessor implements OnModuleInit, OnModuleDestroy {
   }
 
   private async initializeWorkers(): Promise<void> {
-    this.workers = [this.createUserWorker(), this.listAllUsersWorker()];
+    this.workers = [
+      this.createUserWorker(),
+      this.listAllUsersWorker(),
+      this.listOneUserWorker(),
+    ];
+  }
+
+  private listOneUserWorker(): Worker {
+    const worker = new Worker(
+      LIST_ONE_USER_QUEUE,
+      async (job: Job<{ id: number }>) => {
+        return this.userRepository.findOne({
+          where: { id: job.data.id },
+        });
+      },
+      {
+        connection: this.listOneUserQueue.opts.connection,
+      },
+    );
+
+    return worker;
   }
 
   private createUserWorker(): Worker {

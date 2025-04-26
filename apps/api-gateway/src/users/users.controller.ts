@@ -24,8 +24,10 @@ export class UsersController {
   }
 
   @Post('/create')
-  async create(@Body() dto: CreateUserDto) {
+  async create(@Body() dto: CreateUserDto): Promise<{ message: string }> {
     this.createUserQueue.add(CREATE_USER_QUEUE, dto);
+
+    return { message: 'User created successfully' };
   }
 
   @Get('/list/all')

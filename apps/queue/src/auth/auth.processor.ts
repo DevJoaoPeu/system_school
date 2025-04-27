@@ -13,6 +13,8 @@ import { LOGIN_USER_QUEUE } from 'libs/shared/constants/queues';
 import { Job, Queue, Worker } from 'bullmq';
 import { LoginDto } from '@app/shared/dto/auth/login.dto';
 import { compareSync } from 'bcryptjs';
+import { SecurityJwtService } from '../security-jwt/security-jwt.service';
+import { PayloadJwtDto } from '../security-jwt/dto/payload.jwt..dto';
 
 @Injectable()
 export class AuthProcessor implements OnModuleInit, OnModuleDestroy {
@@ -24,6 +26,7 @@ export class AuthProcessor implements OnModuleInit, OnModuleDestroy {
 
   constructor(
     @InjectQueue(LOGIN_USER_QUEUE) private readonly loginUserQueue: Queue,
+    private readonly securityJwtService: SecurityJwtService,
   ) {}
 
   onModuleInit() {
@@ -61,9 +64,18 @@ export class AuthProcessor implements OnModuleInit, OnModuleDestroy {
           throw new BadRequestException('Credentials invalid');
         }
 
+        const payload: PayloadJwtDto = {
+          cpf: user.cpf,
+          email: user.email,
+          sub: user.id,
+          typeUserPermission: user.typeUser,
+        };
+
+        const token: string = await this.securityJwtService.sign(payload);
+
         return {
           loginIsValid: true,
-          acessToken: 'token',
+          acessToken: token,
         };
       },
       {

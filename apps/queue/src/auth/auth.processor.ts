@@ -47,21 +47,14 @@ export class AuthProcessor implements OnModuleInit, OnModuleDestroy {
       async (job: Job<LoginDto>) => {
         const { email, password } = job.data;
 
-        const user = await this.userRepository.findOne({
-          where: { email },
-        });
-
+        const user = await this.userRepository.findOne({ where: { email } });
         if (!user) {
           throw new BadRequestException('User not found');
         }
 
-        const comparePassword: boolean = await compareSync(
-          password,
-          user.password,
-        );
-
-        if (!comparePassword) {
-          throw new BadRequestException('Credentials invalid');
+        const isPasswordValid: boolean = compareSync(password, user.password);
+        if (!isPasswordValid) {
+          return { loginIsValid: false, acessToken: '' };
         }
 
         const payload: PayloadJwtDto = {
@@ -71,12 +64,9 @@ export class AuthProcessor implements OnModuleInit, OnModuleDestroy {
           typeUserPermission: user.typeUser,
         };
 
-        const token: string = await this.securityJwtService.sign(payload);
+        const acessToken: string = await this.securityJwtService.sign(payload);
 
-        return {
-          loginIsValid: true,
-          acessToken: token,
-        };
+        return { loginIsValid: true, acessToken };
       },
       {
         connection: this.loginUserQueue.opts.connection,

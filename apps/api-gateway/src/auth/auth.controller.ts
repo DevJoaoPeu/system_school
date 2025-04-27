@@ -33,7 +33,7 @@ export class AuthController {
       this.loginUserQueueEvent,
     );
 
-    if (event.loginIsValid) {
+    if (!event.loginIsValid) {
       return new UnauthorizedException('Login invalid');
     }
 

@@ -15,6 +15,7 @@ import { CreateUserDto } from '@app/shared/dto/user/create.user.dto';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserEntity } from './entities/user.entity';
 import { Repository } from 'typeorm';
+import { hash } from 'bcryptjs';
 
 @Injectable()
 export class UserProcessor implements OnModuleInit, OnModuleDestroy {
@@ -68,7 +69,18 @@ export class UserProcessor implements OnModuleInit, OnModuleDestroy {
     const worker = new Worker(
       CREATE_USER_QUEUE,
       async (job: Job<CreateUserDto>) => {
-        this.userRepository.save(job.data);
+        const { cpf, email, name, password, surname, typeUser } = job.data;
+
+        const hashPassword: string = await hash(password, 10);
+
+        this.userRepository.save({
+          cpf,
+          email,
+          name,
+          password: hashPassword,
+          surname,
+          typeUser,
+        });
       },
       {
         connection: this.createUserQueue.opts.connection,

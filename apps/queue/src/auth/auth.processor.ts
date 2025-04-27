@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   Injectable,
   Logger,
   OnModuleDestroy,
@@ -11,6 +12,7 @@ import { InjectQueue } from '@nestjs/bullmq';
 import { LOGIN_USER_QUEUE } from 'libs/shared/constants/queues';
 import { Job, Queue, Worker } from 'bullmq';
 import { LoginDto } from '@app/shared/dto/auth/login.dto';
+import { compareSync } from 'bcryptjs';
 
 @Injectable()
 export class AuthProcessor implements OnModuleInit, OnModuleDestroy {
@@ -42,9 +44,26 @@ export class AuthProcessor implements OnModuleInit, OnModuleDestroy {
       async (job: Job<LoginDto>) => {
         const { email, password } = job.data;
 
+        const user = await this.userRepository.findOne({
+          where: { email },
+        });
+
+        if (!user) {
+          throw new BadRequestException('User not found');
+        }
+
+        const comparePassword: boolean = await compareSync(
+          password,
+          user.password,
+        );
+
+        if (!comparePassword) {
+          throw new BadRequestException('Credentials invalid');
+        }
+
         return {
-          loginIsValid: false,
-          acessToken: `${email}-${password}`,
+          loginIsValid: true,
+          acessToken: 'token',
         };
       },
       {
